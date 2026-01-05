@@ -74,4 +74,8 @@ const authSchema = new Schema<IAuth>(
    }
 );
 
+authSchema.post
+
 export const Auth = model<IAuth, IAuthModel>("Auth", authSchema);
+
+
