@@ -158,7 +158,11 @@ userSchema.methods.createAccessToken = async (
       profileImage: user?.profileImage as string,
       status: user?.status,
    };
-   const accessToken = await createToken(payload, privateKey, expiresIn);
+   const accessToken = (await createToken(
+      payload,
+      privateKey,
+      expiresIn
+   )) as string;
    return accessToken;
 };
 
@@ -176,7 +180,7 @@ userSchema.methods.createRefreshToken = async (
       status: user?.status,
    };
    const refreshToken = await createToken(payload, privateKey, expiresIn);
-   return refreshToken;
+   return refreshToken as string;
 };
 
 export const User = model<IUser, IUserModel>("User", userSchema);
