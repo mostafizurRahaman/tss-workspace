@@ -1,5 +1,5 @@
 {
-   "name": "@repo/db",
+   "name": "@repo/shared",
    "version": "1.0.0",
    "description": "",
    "main": "./src/index.ts",
@@ -11,10 +11,12 @@
    "license": "ISC",
    "packageManager": "pnpm@10.27.0",
    "dependencies": {
-      "@repo/shared": "workspace:*",
+      "@types/express": "^5.0.6",
+      "@types/jsonwebtoken": "^9.0.10",
       "bcrypt": "^6.0.0",
+      "express": "^5.2.1",
       "http-status": "^2.1.0",
-      "mongoose": "^9.1.1"
+      "jsonwebtoken": "^9.0.3"
    },
    "devDependencies": {
       "@types/bcrypt": "^6.0.0"

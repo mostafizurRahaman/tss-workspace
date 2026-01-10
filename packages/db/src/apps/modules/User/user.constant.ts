@@ -16,8 +16,6 @@ export const AuthRoles = {
    SUPER_ADMIN: "superadmin",
    ADMIN: "admin",
    USER: "user",
-
-   // ...rest of roles
 };
 
 export const AuthRolesValues = Object.values(AuthRoles);
