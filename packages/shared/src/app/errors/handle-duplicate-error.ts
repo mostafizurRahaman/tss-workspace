@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
-import { IErrorSources, ISendErrorResponse } from "../interfaces/errors";
+
 import httpStatus from "http-status";
+import { IErrorSources, ISendErrorResponse } from "@/app/types";
 
 const handleValidationError = (
    err: mongoose.Error.ValidationError

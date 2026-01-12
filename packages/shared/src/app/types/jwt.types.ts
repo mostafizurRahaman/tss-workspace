@@ -1,7 +1,3 @@
-
-
-
-
 export interface IJwtUserPayload {
    _id: string;
    name: string;
