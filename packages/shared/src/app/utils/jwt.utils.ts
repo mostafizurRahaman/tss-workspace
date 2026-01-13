@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { IJwtUserPayload } from "../types";
+import { IJwtUserPayload } from "@/app/types";
 
 // 1. Create Token
 export const createToken = async (
@@ -12,9 +12,7 @@ export const createToken = async (
          expiresIn,
       });
       return token;
-   } catch (error) {
-      
-   }
+   } catch (error) {}
 };
 
 // 2. Verify

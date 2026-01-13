@@ -1,11 +1,11 @@
 import httpStatus from "http-status";
 import { ZodError } from "zod";
-import { ISendErrorResponse } from "../interfaces/errors";
+import { IErrorSources, ISendErrorResponse } from "@/app/types";
 
 const handleZodError = (err: ZodError): ISendErrorResponse => {
-   const errorSources = err.issues.map((issue) => {
+   const errorSources: IErrorSources[] = err.issues.map((issue) => {
       return {
-         path: issue.path[issue.path.length - 1],
+         path: issue.path[issue.path.length - 1] as string,
          message: issue.message,
       };
    });
