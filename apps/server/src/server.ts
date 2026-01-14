@@ -1,24 +1,24 @@
-import { connectDB } from "@repo/db";
-import { Server } from "http";
-import configs from "./app/configs";
-import { app } from "./app";
+import { connectDB } from '@repo/db'
+import { Server } from 'http'
+import configs from './app/configs'
+import { app } from './app'
 
-let server: Server;
+let server: Server
 //  boostrap function :
 const boostrap = async () => {
   try {
-    await connectDB(configs.databaseUrl);
-    console.log(`✅ Database connected  successfully!`);
+    await connectDB(configs.databaseUrl)
+    console.log(`✅ Database connected  successfully!`)
 
     // server listen :
     server = app.listen(configs.port, () => {
-      console.log(`🧑‍🚀🚀 Server is running on ${configs.port}`);
-    });
+      console.log(`🧑‍🚀🚀 Server is running on ${configs.port}`)
+    })
   } catch (err) {
-    console.log(`❌ Database connection failed ❌ `);
+    console.log(`❌ Database connection failed ❌ `)
   }
-};
+}
 
-console.log("a");
+console.log('a')
 
-boostrap();
+boostrap()
