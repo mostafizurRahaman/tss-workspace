@@ -1,37 +1,24 @@
-import { z, ZodIssueCode } from 'zod'
+import { requiredEmail, requiredString } from '@repo/shared'
+import z from 'zod/v4'
 
-/**
- * Required date validator
- * Accepts Date objects or ISO date strings (coerces to Date).
- * @param field - Name used in error messages
- */
-export const requiredDate = (field: string = 'Value') =>
-  z.preprocess(
-    (val) => {
-      if (typeof val === 'string' || typeof val === 'number') {
-        const d = new Date(val)
-        return isNaN(d.getTime()) ? val : d
-      }
-      return val
-    },
-    z.date({
-      error: (issue) =>
-        issue.code === ZodIssueCode.invalid_type && issue.input === undefined
-          ? `${field} is required`
-          : `${field} must be a valid date`,
-    })
-  )
+const signUserSchema = z.object({
+  name: requiredString('Name'),
+  email: requiredEmail('Email'),
+  password: requiredString('Password').min(1, {
+    error: `Password is required`,
+  }),
+})
 
-/**
- * Optional date validator
- * Accepts Date object or ISO string; allows undefined.
- */
-export const optionalDate = (field: string = 'Value') => requiredDate(field).optional()
+const loginSchema = signUserSchema.pick({
+  email: true,
+  password: true,
+})
 
-/**
- * Nullable date validator
- * Accepts Date object or ISO string; allows null.
- */
-export const nullableDate = (field: string = 'Value') => requiredDate(field).nullable()
+export const AuthValidations = {
+  signUserSchema,
+  loginSchema,
+}
 
+export type ISignUpSchemaType = z.infer<typeof signUserSchema>
 
+export type ILoginType = z.infer<typeof loginSchema>

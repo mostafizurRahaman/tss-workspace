@@ -1,8 +1,11 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "outDir": "./dist"
+    "outDir": "./dist",
+    "paths": {
+      "@app/*": ["apps/server/src/app/*"]
+    }
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", ""],
   "exclude": ["node_modules", "dist", "**/*.js", "**/*.js.map", "**/*.d.ts", "**/*.d.ts.map"]
 }

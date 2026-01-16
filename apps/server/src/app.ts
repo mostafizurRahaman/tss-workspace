@@ -10,7 +10,7 @@ const app: express.Application = express()
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 munite
-  max: 3, // limit each IP to 100 requests per windowMs
+  max: 500, // limit each IP to 100 requests per windowMs
   message: 'Too many accounts created from this IP, please try again after a minute',
 })
 
