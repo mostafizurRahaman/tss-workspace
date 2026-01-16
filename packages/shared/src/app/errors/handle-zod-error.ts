@@ -1,20 +1,20 @@
-import httpStatus from "http-status";
-import { ZodError } from "zod";
-import { IErrorSources, ISendErrorResponse } from "@/app/types";
+import httpStatus from 'http-status'
+import { ZodError } from 'zod'
+import type { IErrorSources, ISendErrorResponse } from '../types'
 
 const handleZodError = (err: ZodError): ISendErrorResponse => {
-   const errorSources: IErrorSources[] = err.issues.map((issue) => {
-      return {
-         path: issue.path[issue.path.length - 1] as string,
-         message: issue.message,
-      };
-   });
+  const errorSources: IErrorSources[] = err.issues.map((issue) => {
+    return {
+      path: issue.path[issue.path.length - 1] as string,
+      message: issue.message,
+    }
+  })
 
-   return {
-      statusCode: httpStatus.BAD_REQUEST,
-      message: "Validation Error!!!",
-      errorSources,
-   };
-};
+  return {
+    statusCode: httpStatus.BAD_REQUEST,
+    message: 'Validation Error!!!',
+    errorSources,
+  }
+}
 
-export default handleZodError;
+export default handleZodError

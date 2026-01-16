@@ -1,3 +1,1 @@
-export * from "./connectDB";
-
-
+export * from './connectDB'

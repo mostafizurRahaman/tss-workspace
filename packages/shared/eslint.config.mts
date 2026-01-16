@@ -3,12 +3,10 @@ import globals from 'globals'
 import tseslint from 'typescript-eslint'
 
 export default tseslint.config(
-  // Ignore patterns
   {
     ignores: ['node_modules/**', 'dist/**'],
   },
 
-  // TypeScript files
   {
     files: ['**/*.ts'],
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
@@ -21,11 +19,9 @@ export default tseslint.config(
       },
     },
     rules: {
-      // Server-specific rules
-      'no-console': 'off', // Allow console in server
-      'no-unused-vars': 'error',
-      'prefer-const': 'error',
+      'no-console': 'warn',
       '@typescript-eslint/no-explicit-any': 'error',
+      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
     },
   }
 )

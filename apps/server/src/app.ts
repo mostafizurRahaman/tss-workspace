@@ -1,16 +1,15 @@
-import express, { Request, Response } from 'express'
+import express, { type Request, type Response } from 'express'
 import cors from 'cors'
 import morgan from 'morgan'
 import configs from './app/configs'
 import helmet from 'helmet'
 import rateLimit from 'express-rate-limit'
-const app = express()
+const app: express.Application = express()
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 munite
   max: 3, // limit each IP to 100 requests per windowMs
-  message:
-    'Too many accounts created from this IP, please try again after a minute',
+  message: 'Too many accounts created from this IP, please try again after a minute',
 })
 
 // application level middlewars:
@@ -21,7 +20,7 @@ app.use(
   cors({
     origin: configs.corsOrigins?.split(','), // split all the origins
     credentials: true,
-  }),
+  })
 )
 app.use(limiter)
 
@@ -31,8 +30,6 @@ app.get('/', (req: Request, res: Response) => {
     message: `Your server is running now`,
   })
 })
-
-
 
 // other api endpoints with versions :
 

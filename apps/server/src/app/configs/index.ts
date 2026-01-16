@@ -10,9 +10,7 @@ dotenv.config({
 
 // 2. Define the Schema (The Validator)
 const envSchema = z.object({
-  NODE_ENV: z
-    .enum(['production', 'development', 'local'])
-    .default('development'),
+  NODE_ENV: z.enum(['production', 'development', 'local']).default('development'),
   PORT: z.string().transform(Number).default(5000),
   CORS_ORIGINS: z.string().default('*'),
   DATABASE_URL: z.string().url('Invalid Database URL'),

@@ -1,27 +1,25 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose'
 
-import httpStatus from "http-status";
-import { IErrorSources, ISendErrorResponse } from "@/app/types";
+import httpStatus from 'http-status'
+import type { IErrorSources, ISendErrorResponse } from '../types'
 
-const handleValidationError = (
-   err: mongoose.Error.ValidationError
-): ISendErrorResponse => {
-   const errorSources: IErrorSources[] = Object.values(err.errors).map(
-      (val: mongoose.Error.ValidatorError | mongoose.Error.CastError) => {
-         return {
-            path: val.path,
-            message: val.message,
-         };
+const handleValidationError = (err: mongoose.Error.ValidationError): ISendErrorResponse => {
+  const errorSources: IErrorSources[] = Object.values(err.errors).map(
+    (val: mongoose.Error.ValidatorError | mongoose.Error.CastError) => {
+      return {
+        path: val.path,
+        message: val.message,
       }
-   );
+    }
+  )
 
-   const statusCode: number = httpStatus.BAD_REQUEST;
+  const statusCode: number = httpStatus.BAD_REQUEST
 
-   return {
-      statusCode,
-      message: "Validation Error",
-      errorSources,
-   };
-};
+  return {
+    statusCode,
+    message: 'Validation Error',
+    errorSources,
+  }
+}
 
-export default handleValidationError;
+export default handleValidationError
