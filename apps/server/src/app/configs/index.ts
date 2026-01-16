@@ -1,27 +1,27 @@
-import dotenv from "dotenv";
-import path from "path";
-import { z } from "zod";
+import dotenv from 'dotenv'
+import path from 'path'
+import { z } from 'zod'
 
 // 1. Load the correct .env file
-const nodeEnv = process.env.NODE_ENV || "development";
+const nodeEnv = process.env.NODE_ENV || 'development'
 dotenv.config({
-  path: path.join(process.cwd(), `../../.env.${nodeEnv}`),
-});
+  path: path.join(process.cwd(), `.env.${nodeEnv}`),
+})
 
 // 2. Define the Schema (The Validator)
 const envSchema = z.object({
   NODE_ENV: z
-    .enum(["production", "development", "local"])
-    .default("development"),
+    .enum(['production', 'development', 'local'])
+    .default('development'),
   PORT: z.string().transform(Number).default(5000),
-  CORS_ORIGINS: z.string().default("*"),
-  DATABASE_URL: z.string().url("Invalid Database URL"),
+  CORS_ORIGINS: z.string().default('*'),
+  DATABASE_URL: z.string().url('Invalid Database URL'),
   PASSWORD_SOLT_ROUND: z.string().transform(Number).default(12),
 
   // Site Config
   SITE_NAME: z.string(),
   SITE_LOGO: z.string().url().optional(),
-  SITE_PRIMARY_COLOR: z.string().default("#000000"),
+  SITE_PRIMARY_COLOR: z.string().default('#000000'),
   SITE_GST_FEE: z.string().transform(Number).default(0),
   SITE_FEE: z.string().transform(Number).default(0),
 
@@ -57,18 +57,18 @@ const envSchema = z.object({
   SUPER_ADMIN_EMAIL: z.string().email(),
   OTP_EXPIRES: z.string().transform(Number).default(5),
   OTP_DIGITS: z.string().transform(Number).default(6),
-});
+})
 
 // 3. Validate process.env
-const parsedEnv = envSchema.safeParse(process.env);
+const parsedEnv = envSchema.safeParse(process.env)
 
 if (!parsedEnv.success) {
-  console.error("❌ Invalid Environment Variables:");
-  console.error(JSON.stringify(parsedEnv.error.format(), null, 2));
-  process.exit(1); // Stop the app immediately if variables are wrong
+  console.error('❌ Invalid Environment Variables:')
+  console.error(JSON.stringify(parsedEnv.error.format(), null, 2))
+  process.exit(1) // Stop the app immediately if variables are wrong
 }
 
-const env = parsedEnv.data;
+const env = parsedEnv.data
 
 // 4. Export the Structured Object
 const configs = {
@@ -134,9 +134,9 @@ const configs = {
     expires: env.OTP_EXPIRES,
     digits: env.OTP_DIGITS,
   },
-} as const;
+} as const
 
-export default configs;
+export default configs
 
 // Automatically infer the type for use elsewhere if needed
-export type TConfigs = typeof configs;
+export type TConfigs = typeof configs

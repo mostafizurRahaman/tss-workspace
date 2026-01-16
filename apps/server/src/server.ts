@@ -1,7 +1,7 @@
 import { connectDB } from '@repo/db'
 import { Server } from 'http'
 import configs from './app/configs'
-import { app } from './app'
+import app from './app'
 
 let server: Server
 //  boostrap function :
@@ -18,7 +18,5 @@ const boostrap = async () => {
     console.log(`❌ Database connection failed ❌ `)
   }
 }
-
-console.log('a')
 
 boostrap()
