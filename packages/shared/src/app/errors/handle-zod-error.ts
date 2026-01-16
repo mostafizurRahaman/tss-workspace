@@ -2,7 +2,7 @@ import httpStatus from 'http-status'
 import { ZodError } from 'zod'
 import type { IErrorSources, ISendErrorResponse } from '../types'
 
-const handleZodError = (err: ZodError): ISendErrorResponse => {
+export const handleZodError = (err: ZodError): ISendErrorResponse => {
   const errorSources: IErrorSources[] = err.issues.map((issue) => {
     return {
       path: issue.path[issue.path.length - 1] as string,
@@ -16,5 +16,3 @@ const handleZodError = (err: ZodError): ISendErrorResponse => {
     errorSources,
   }
 }
-
-export default handleZodError

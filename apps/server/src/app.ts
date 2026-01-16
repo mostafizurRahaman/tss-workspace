@@ -4,6 +4,8 @@ import morgan from 'morgan'
 import configs from './app/configs'
 import helmet from 'helmet'
 import rateLimit from 'express-rate-limit'
+import { notFound } from './app/middlewares/not-found'
+import globalErrorHandler from './app/middlewares/global-error-handler'
 const app: express.Application = express()
 
 const limiter = rateLimit({
@@ -34,7 +36,9 @@ app.get('/', (req: Request, res: Response) => {
 // other api endpoints with versions :
 
 // not found middleware:
+app.use(notFound)
 
 // global error handler
+app.use(globalErrorHandler)
 
 export default app

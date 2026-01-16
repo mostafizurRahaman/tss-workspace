@@ -3,7 +3,7 @@ import mongoose from 'mongoose'
 import httpStatus from 'http-status'
 import type { IErrorSources, ISendErrorResponse } from '../types'
 
-const handleCastError = (err: mongoose.Error.CastError): ISendErrorResponse => {
+export const handleCastError = (err: mongoose.Error.CastError): ISendErrorResponse => {
   const errorSources: IErrorSources[] = [
     {
       path: err.path,
@@ -17,4 +17,4 @@ const handleCastError = (err: mongoose.Error.CastError): ISendErrorResponse => {
   }
 }
 
-export default handleCastError
+

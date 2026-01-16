@@ -1,24 +1,21 @@
-import mongoose from 'mongoose'
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import type { IErrorSources, ISendErrorResponse } from '../types'
 import httpStatus from 'http-status'
 
-const handleValidationError = (err: mongoose.Error.ValidationError): ISendErrorResponse => {
-  const errorSources: IErrorSources[] = Object.values(err.errors).map(
-    (val: mongoose.Error.ValidatorError | mongoose.Error.CastError) => {
-      return {
-        path: val.path,
-        message: val.message,
-      }
-    }
-  )
-
+export const handleDuplicateError = (err: any): ISendErrorResponse => {
+  const key = Object.keys(err.keyPattern)[0] as string
+  const errorSources: IErrorSources[] = [
+    {
+      path: key,
+      message: ` "The ${err.keyValue[key]}"  is already Exists`,
+    },
+  ]
   const statusCode: number = httpStatus.BAD_REQUEST
 
   return {
     statusCode,
-    message: 'Validation Error',
+    message: `Path "${key}" is already Exists`,
     errorSources,
   }
 }
-
-export default handleValidationError
