@@ -15,8 +15,28 @@ const boostrap = async () => {
       console.log(`🧑‍🚀🚀 Server is running on ${configs.port}`)
     })
   } catch (err) {
+    console.log(err)
     console.log(`❌ Database connection failed ❌ `)
   }
 }
 
+// bootstrap the project
 boostrap()
+
+// handle unhandled rejection
+process.on('unhandledRejection', (reason) => {
+  console.log(`UNHANDELED REJECTION : REASON ->`, reason)
+  if (server) {
+    server.close(() => {
+      process.exit(1)
+    })
+  }
+
+  process.exit(1)
+})
+
+// handled uncaughtException:
+process.on('uncaughtException', (error) => {
+  console.log('uncaughtException: ERROR', error.message)
+  process.exit(1)
+})
