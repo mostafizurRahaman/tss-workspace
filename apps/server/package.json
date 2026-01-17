@@ -23,6 +23,8 @@
   "dependencies": {
     "@repo/db": "workspace:*",
     "@repo/shared": "workspace:*",
+    "@repo/email-templates": "workspace:*",
+    "@repo/email-sender": "workspace:*",
     "@typescript-eslint/eslint-plugin": "^8.53.0",
     "@typescript-eslint/parser": "^8.53.0",
     "cors": "^2.8.5",

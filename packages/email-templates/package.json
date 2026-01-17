@@ -1,5 +1,5 @@
 {
-  "name": "email-templates",
+  "name": "@repo/email-templates",
   "version": "1.0.0",
   "description": "",
   "main": "./src/index.ts",

@@ -4,6 +4,7 @@ import { AppError, hashPassword } from '@repo/shared'
 import httpStatus from 'http-status'
 import configs from '@app/configs'
 
+// 1. Signup 
 const signUp = async (payload: ISignUpSchemaType) => {
   const { name, email, password } = payload
 
@@ -34,7 +35,9 @@ const signUp = async (payload: ISignUpSchemaType) => {
     throw new AppError(httpStatus.BAD_REQUEST, 'User creation failed!')
   }
   return newUser
-}``
+}
+
+// 2. Login: 
 
 export const AuthServices = {
   signUp,
