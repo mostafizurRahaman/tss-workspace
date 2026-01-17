@@ -1,6 +1,6 @@
 import { z, ZodIssueCode } from 'zod'
 
-export const emailSchema = (fieldName = 'Email') =>
+export const requiredEmail = (fieldName = 'Email') =>
   z
     .string({
       error: (issue) => {
