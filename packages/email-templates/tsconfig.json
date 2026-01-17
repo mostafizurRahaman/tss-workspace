@@ -3,7 +3,7 @@
   "compilerOptions": {
     "outDir": "./dist",
     "jsx": "react-jsx",
-    "lib": ["ESNext", "dom", "dom.iterable"], // Added dom for React
+    "lib": ["ESNext", "dom", "dom.iterable"],
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]

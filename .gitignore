@@ -14,6 +14,7 @@ dist/
 build/
 *.tsbuildinfo
 
+
 # --- MongoDB Specific ---
 # If you ever run MongoDB locally and store data in the project
 data/db/
@@ -41,3 +42,6 @@ yarn-error.log*
 # --- Testing ---
 coverage/
 .nyc_output
+
+# React email: 
+.react-email
