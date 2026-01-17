@@ -25,7 +25,7 @@ interface ResetPasswordOTPEmailProps {
   companyLogo?: string
 }
 
-const ResetPasswordOTPEmail = ({
+export const ResetPasswordOTPEmail = ({
   userFirstName = 'User',
   otpCode = '123456',
   userEmail = 'user@example.com',
@@ -257,4 +257,4 @@ const ResetPasswordOTPEmail = ({
   )
 }
 
-export default ResetPasswordOTPEmail
+

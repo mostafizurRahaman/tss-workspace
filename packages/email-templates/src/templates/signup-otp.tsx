@@ -2,19 +2,18 @@ import { Button, Column, Hr, Img, Link, Row, Section, Text, Heading } from '@rea
 import * as React from 'react'
 import { EmailLayout } from '../layouts/email-layout'
 
-
 interface SignupOTPEmailProps {
-  userFirstName?: string
-  otpCode?: string
-  companyName?: string
-  companyLogo?: string
+  userFirstName: string
+  otpCode: string
+  companyName: string
+  companyLogo: string
 }
 
 export const SignupOTPEmail = ({
-  userFirstName = 'there',
-  otpCode = '123456',
-  companyName = 'Acme Inc',
-  companyLogo = 'https://your-aws-s3-link.com/logo.png',
+  userFirstName,
+  otpCode,
+  companyName,
+  companyLogo,
 }: SignupOTPEmailProps) => {
   return (
     <EmailLayout previewText={`Your verification code is ${otpCode}`}>
@@ -86,5 +85,3 @@ export const SignupOTPEmail = ({
     </EmailLayout>
   )
 }
-
-export default SignupOTPEmail

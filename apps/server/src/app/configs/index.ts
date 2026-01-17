@@ -53,7 +53,7 @@ const envSchema = z.object({
   // Admin & OTP
   SUPER_ADMIN_PASSWORD: z.string(),
   SUPER_ADMIN_EMAIL: z.string().email(),
-  OTP_EXPIRES: z.string().transform(Number).default(5),
+  OTP_EXPIRES_IN: z.string().transform(Number).default(5),
   OTP_DIGITS: z.string().transform(Number).default(6),
 })
 
@@ -129,7 +129,7 @@ const configs = {
   },
 
   otpSettings: {
-    expires: env.OTP_EXPIRES,
+    expiresIn: env.OTP_EXPIRES_IN,
     digits: env.OTP_DIGITS,
   },
 } as const

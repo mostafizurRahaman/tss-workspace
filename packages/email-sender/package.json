@@ -2,7 +2,7 @@
   "name": "@repo/email-sender",
   "version": "1.0.0",
   "description": "",
-  "main": "index.ts",
+  "main": "./src/index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
@@ -16,6 +16,7 @@
   "license": "ISC",
   "packageManager": "pnpm@10.27.0",
   "dependencies": {
+    "@repo/email-templates": "workspace:*",
     "nodemailer": "^7.0.12"
   },
   "devDependencies": {

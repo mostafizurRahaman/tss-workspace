@@ -4,8 +4,6 @@ import { AuthRoles, AuthStatus } from './user.constant'
 import type { IUser, IUserModel } from './user.interface'
 import { comparePassword, createToken, hashPassword, type IJwtUserPayload } from '@repo/shared'
 
-
-
 const userSchema = new Schema<IUser, IUserModel>(
   {
     name: {
@@ -49,6 +47,12 @@ const userSchema = new Schema<IUser, IUserModel>(
     },
     twoFactorBackupCodes: {
       type: [String],
+    },
+
+    // otp verified:
+    isOtpVerified: {
+      type: Boolean,
+      default: false,
     },
 
     // reason fields:

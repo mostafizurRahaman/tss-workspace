@@ -120,7 +120,7 @@ const bodyStyle = {
   backgroundColor: '#f6f9fc',
   fontFamily:
     '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif',
-  WebkitFontSmoothing: 'antialiased' as 'antialiased',
+  WebkitFontSmoothing: 'antialiased' as 'string',
   margin: '0 auto',
   padding: '0',
 }
@@ -181,5 +181,3 @@ const footerTextStyle = {
   fontSize: '14px',
   color: '#8898aa',
 }
-
-export default WelcomeEmail

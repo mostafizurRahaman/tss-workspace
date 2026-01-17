@@ -17,7 +17,6 @@ export interface IOtpDocument extends IOtp, Document {}
 
 // OTP MODEL:
 export interface IOtpModel extends Model<IOtpDocument> {
-  createOtp(user: string, type: IOtpType, expireAt: Date): Promise<IOtpDocument | null>
   findValidOtp(user: string, type: IOtpType): Promise<IOtpDocument | null>
   verifyAndConsumeOtp(user: string, type: IOtpType): Promise<{ isValid: boolean; message: string }>
 }
