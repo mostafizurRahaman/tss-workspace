@@ -6,6 +6,7 @@ import helmet from 'helmet'
 import rateLimit from 'express-rate-limit'
 import { notFound } from './app/middlewares/not-found'
 import globalErrorHandler from './app/middlewares/global-error-handler'
+import { allRoutes } from '@app/routes'
 const app: express.Application = express()
 
 const limiter = rateLimit({
@@ -34,6 +35,7 @@ app.get('/', (req: Request, res: Response) => {
 })
 
 // other api endpoints with versions :
+app.use('/api/v1', allRoutes)
 
 // not found middleware:
 app.use(notFound)

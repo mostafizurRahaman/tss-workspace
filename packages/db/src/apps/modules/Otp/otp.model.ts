@@ -9,6 +9,10 @@ const otpSchema = new Schema<IOtp, IOtpModel>(
       ref: 'User',
       required: true,
     },
+    otp: {
+      type: String,
+      required: true,
+    },
     expiresAt: {
       type: Date,
       required: true,
@@ -23,29 +27,6 @@ const otpSchema = new Schema<IOtp, IOtpModel>(
     timestamps: true,
   }
 )
-
-// 1. Create Otp:
-otpSchema.statics.createOtp = function (
-  user: string,
-  type: IOtpType,
-  expireAt: Date
-): Promise<IOtpDocument | null> {
-  return this.findOneAndUpdate(
-    {
-      user,
-      type,
-    },
-    {
-      user,
-      type,
-      expiresAt: new Date(expireAt),
-    },
-    {
-      new: true,
-      upsert: true,
-    }
-  )
-}
 
 // 2. Find Valid otp for user
 otpSchema.statics.findValidOtp = function (

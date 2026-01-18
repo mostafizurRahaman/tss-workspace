@@ -43,10 +43,11 @@ const userSchema = new Schema<IUser, IUserModel>(
     },
     isTwoFactorEnabled: {
       type: Boolean,
-      default: true,
+      default: false,
     },
     twoFactorBackupCodes: {
       type: [String],
+      select: false,
     },
 
     // otp verified:

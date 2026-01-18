@@ -9,7 +9,7 @@ export interface EmailConfig {
 export interface SendEmailParams {
   to: string | string[]
   subject: string
-  html?: string
+  html: string
   text?: string
-  from?: string
+  from: string
 }

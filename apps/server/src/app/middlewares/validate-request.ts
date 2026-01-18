@@ -3,7 +3,7 @@ import type { ZodObject } from 'zod'
 
 export const validateRequest = (schema: ZodObject) => {
   return catchAsync(async (req, res, next) => {
-    const { data, success } = await schema.safeParseAsync({
+    const { data, success, error } = await schema.safeParseAsync({
       body: req.body,
       params: req.params,
       query: req.query,
@@ -19,6 +19,9 @@ export const validateRequest = (schema: ZodObject) => {
         req.cookies = data.cookies
       }
       next()
+    } else {
+      console.log(error)
+      next(error)
     }
   })
 }
