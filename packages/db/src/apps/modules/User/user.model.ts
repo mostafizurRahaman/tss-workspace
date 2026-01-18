@@ -1,8 +1,7 @@
-import { model, Schema, type HydratedDocument } from 'mongoose'
+import { model, Schema } from 'mongoose'
 
 import { AuthRoles, AuthStatus } from './user.constant'
 import type { IUser, IUserModel } from './user.interface'
-import { hashPassword } from '@repo/shared'
 
 const userSchema = new Schema<IUser, IUserModel>(
   {
