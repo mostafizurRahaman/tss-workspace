@@ -25,14 +25,15 @@ const resendSignupOtpSchema = z.object({
 })
 
 const verifySignupOtpSchema = z.object({
-  body: z.object({
-    ...signUserSchema.shape.body.pick({
+  body: signUserSchema.shape.body
+    .pick({
       email: true,
+    })
+    .extend({
+      otp: requiredString('Otp')
+        .length(6, { error: 'OTP must be exactly 6 digits' })
+        .regex(/^\d+$/, { error: 'OTP must contain only numbers' }),
     }),
-    otp: requiredString('Otp')
-      .length(6, { error: 'OTP must be exactly 6 digits' })
-      .regex(/^\d+$/, { error: 'OTP must contain only numbers' }),
-  }),
 })
 
 export const AuthValidations = {
@@ -46,3 +47,4 @@ export type ISignUpSchemaType = z.infer<typeof signUserSchema.shape.body>
 
 export type ILoginType = z.infer<typeof loginSchema.shape.body>
 export type IResendSignupType = z.infer<typeof resendSignupOtpSchema.shape.body>
+export type IVerifySignupOtpType = z.infer<typeof verifySignupOtpSchema.shape.body>

@@ -26,7 +26,20 @@ const resendSignupOTP = catchAsync(async (req, res) => {
     data: result,
   })
 })
+
+// 3. Verify signup otp:
+const verifySignupOTP = catchAsync(async (req, res) => {
+  await AuthServices.verifySignupOTP(req.body)
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: `OTP verified successfully!`,
+    data: null,
+  })
+})
 export const AuthController = {
   signUp,
   resendSignupOTP,
+  verifySignupOTP,
 }

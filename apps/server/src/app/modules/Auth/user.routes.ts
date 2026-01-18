@@ -15,4 +15,11 @@ router.post(
   AuthController.resendSignupOTP
 )
 
+// 3. Verify signup otp:
+router.post(
+  '/verify-signup-otp',
+  validateRequest(AuthValidations.verifySignupOtpSchema),
+  AuthController.verifySignupOTP
+)
+
 export const authRoutes = router

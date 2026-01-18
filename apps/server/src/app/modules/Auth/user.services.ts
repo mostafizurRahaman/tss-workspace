@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { AuthRoles, AuthStatus, Otp, otpTypes, User, type IUser } from '@repo/db'
-import type { IResendSignupType, ISignUpSchemaType } from './user.validations'
+import type { IResendSignupType, ISignUpSchemaType, IVerifySignupOtpType } from './user.validations'
 import { addTime, AppError, generateOtp, hashPassword } from '@repo/shared'
 // import { sendEmail } from '@repo/email-sender'
 import httpStatus from 'http-status'
@@ -257,12 +257,50 @@ const resendSignupOTP = async (payload: IResendSignupType) => {
   }
 }
 
-// 3. verify signup otp: 
-const verifyResetPasswordOtp = async() => { 
-  
+// 3. verify signup otp:
+const verifySignupOTP = async (payload: IVerifySignupOtpType) => {
+  const { email, otp } = payload
+
+  //  1. check is email exits with this email:
+  const user = await User.isUserExistByEmail(email)
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, `User doesn't exists!`)
+  }
+
+  // 2. check the status:
+  if (user.status === AuthStatus.BLOCKED) {
+    throw new AppError(
+      httpStatus.FORBIDDEN,
+      'Your account has been blocked. Please contact support.'
+    )
+  }
+
+  if (user.status === AuthStatus.DELETED) {
+    throw new AppError(
+      httpStatus.GONE,
+      'This account was deleted. Please contact support to restore it.'
+    )
+  }
+
+  // 3. Is already otp verified :
+  if (user.isOtpVerified) {
+    throw new AppError(httpStatus.BAD_REQUEST, `You account already verified!`)
+  }
+
+  // 4. Find valid otp:
+  const validOtp = await Otp.verifyAndConsumeOtp(user?._id?.toString(), otpTypes.SIGNUP, otp)
+
+  if (!validOtp) {
+    throw new AppError(httpStatus.BAD_REQUEST, 'Invalid otp!')
+  }
+
+  user.isOtpVerified = true
+  user.status = AuthStatus.ACTIVE
+  await user.save()
 }
 
 export const AuthServices = {
   signUp,
   resendSignupOTP,
+  verifySignupOTP,
 }
