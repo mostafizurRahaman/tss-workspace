@@ -22,7 +22,7 @@ export default tseslint.config(
     },
     rules: {
       // Server-specific rules
-      'no-console': 'off', // Allow console in server
+      'no-console': 'warn', // Allow console in server
       'no-unused-vars': 'error',
       'prefer-const': 'error',
       '@typescript-eslint/no-explicit-any': 'error',

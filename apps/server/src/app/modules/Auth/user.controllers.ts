@@ -1,6 +1,7 @@
-import { catchAsync, sendResponse } from '@repo/shared'
+import { catchAsync, sendResponse, setCookie } from '@repo/shared'
 import { AuthServices } from './user.services'
 import httpStatus from 'http-status'
+import configs from '@app/configs'
 
 // 1. Sign up
 const signUp = catchAsync(async (req, res) => {
@@ -42,6 +43,14 @@ const verifySignupOTP = catchAsync(async (req, res) => {
 // 3. Verify Login user:
 const login = catchAsync(async (req, res) => {
   const result = await AuthServices.login(req.body)
+
+  setCookie(res, 'refreshToken', result.refreshToken, {
+    httpOnly: true,
+    secure: configs.nodeEnv === 'production',
+    maxAge: 365 * 24 * 60 * 60 * 1000, // 365 days
+    sameSite: 'lax',
+    path: '/',
+  })
 
   sendResponse(res, {
     success: true,

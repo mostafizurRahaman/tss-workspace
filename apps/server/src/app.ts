@@ -4,6 +4,7 @@ import morgan from 'morgan'
 import configs from './app/configs'
 import helmet from 'helmet'
 import rateLimit from 'express-rate-limit'
+import cookieParser from 'cookie-parser'
 import { notFound } from './app/middlewares/not-found'
 import globalErrorHandler from './app/middlewares/global-error-handler'
 import { allRoutes } from '@app/routes'
@@ -19,6 +20,7 @@ const limiter = rateLimit({
 app.use(morgan('common'))
 app.use(helmet())
 app.use(express.json())
+app.use(cookieParser())
 app.use(
   cors({
     origin: configs.corsOrigins?.split(','), // split all the origins
