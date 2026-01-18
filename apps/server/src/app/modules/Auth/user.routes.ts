@@ -22,4 +22,7 @@ router.post(
   AuthController.verifySignupOTP
 )
 
+// 4. Login :
+router.post('/login', validateRequest(AuthValidations.loginSchema), AuthController.login)
+
 export const authRoutes = router

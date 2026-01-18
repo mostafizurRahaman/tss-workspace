@@ -39,11 +39,6 @@ export interface IUserModel extends Model<IUser> {
   isUserBlocked(user: IUser): Promise<boolean>
   isUserUnderReview(user: IUser): Promise<boolean>
   isUserStatusPending(user: IUser): Promise<boolean>
-  isTwoFactorEnabled: (user: IUser) => Promise<boolean>
-  createAccessToken: (user: IUser) => Promise<string>
-  createRefreshToken: (user: IUser) => Promise<string>
-  createResetToken: (user: IUser) => Promise<string>
-  compareUserPassword: (plainText: string, hashedPassword: string) => Promise<boolean>
   isJwtIssuedBeforePasswordChanged: (
     passwordChangedAt: Date,
     jwtIssuedTimestamps: string

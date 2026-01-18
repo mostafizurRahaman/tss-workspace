@@ -1,13 +1,26 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { AuthRoles, AuthStatus, Otp, otpTypes, User, type IUser } from '@repo/db'
-import type { IResendSignupType, ISignUpSchemaType, IVerifySignupOtpType } from './user.validations'
-import { addTime, AppError, generateOtp, hashPassword } from '@repo/shared'
+import type {
+  ILoginType,
+  IResendSignupType,
+  ISignUpSchemaType,
+  IVerifySignupOtpType,
+} from './user.validations'
+import {
+  addTime,
+  AppError,
+  comparePassword,
+  createToken,
+  generateOtp,
+  hashPassword,
+  type IJwtUserPayload,
+} from '@repo/shared'
 // import { sendEmail } from '@repo/email-sender'
 import httpStatus from 'http-status'
 import configs from '@app/configs'
 import mongoose from 'mongoose'
 import { renderEmail, SignupOTPEmail } from '@repo/email-templates'
-import { sendEmail } from 'packages/email-sender/src'
+import { sendEmail } from '@repo/email-sender'
 
 // 1. Signup
 const signUp = async (payload: ISignUpSchemaType) => {
@@ -299,8 +312,79 @@ const verifySignupOTP = async (payload: IVerifySignupOtpType) => {
   await user.save()
 }
 
+// 4. Login :
+const login = async (payload: ILoginType) => {
+  const { email, password } = payload
+
+  // 1. check user
+  const user = await User.findOne({ email }).select('+password')
+  console.log(user)
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, "User doesn't exists!")
+  }
+
+  // 2. check user status:
+  if (user.status === AuthStatus.BLOCKED) {
+    throw new AppError(httpStatus.FORBIDDEN, 'You account is blocked. Please contact support!')
+  }
+
+  if (user.status === AuthStatus.DELETED) {
+    throw new AppError(httpStatus.GONE, 'Your account is deleted!')
+  }
+
+  // 3. check is in review or not ? if documents required
+
+  // 4. check is otp verified ?
+  if (!user.isOtpVerified) {
+    throw new AppError(httpStatus.BAD_REQUEST, 'Your account is not verified!')
+  }
+
+  // 5. compare given password:
+  const isPasswordMatched = await comparePassword(password, user.password)
+  console.log({
+    password,
+    hashed: user.password,
+    isPasswordMatched,
+  })
+
+  if (!isPasswordMatched) {
+    throw new AppError(httpStatus.BAD_REQUEST, 'Credential not matched!')
+  }
+
+  // 6. Prepare jwt payload:
+  const jwtPayload: IJwtUserPayload = {
+    _id: user._id?.toString(),
+    email: user?.email,
+    name: user?.name,
+    profileImage: user?.profileImage as string,
+    status: user?.status,
+  }
+
+  // 7. Generate access token :
+  const accessToken = createToken(
+    jwtPayload,
+    configs.jwt.accessToken.secret,
+    configs.jwt.accessToken.expiresIn
+  )
+
+  // 8. Generate refresh token
+  const refreshToken = createToken(
+    jwtPayload,
+    configs.jwt.refreshToken.secret,
+    configs.jwt.refreshToken.expiresIn
+  )
+
+  return {
+    refreshToken,
+    accessToken,
+    email: user.email,
+    isTwofactorEnabled: user.isTwoFactorEnabled,
+  }
+}
+
 export const AuthServices = {
   signUp,
   resendSignupOTP,
   verifySignupOTP,
+  login,
 }

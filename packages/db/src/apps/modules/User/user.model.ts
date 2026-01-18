@@ -2,7 +2,7 @@ import { model, Schema, type HydratedDocument } from 'mongoose'
 
 import { AuthRoles, AuthStatus } from './user.constant'
 import type { IUser, IUserModel } from './user.interface'
-import { comparePassword, createToken, hashPassword, type IJwtUserPayload } from '@repo/shared'
+import { hashPassword } from '@repo/shared'
 
 const userSchema = new Schema<IUser, IUserModel>(
   {
@@ -119,60 +119,10 @@ userSchema.statics.isUserStatusPending = async function (user: IUser) {
   return user.status === AuthStatus.PENDING
 }
 
-// 8. check is Twofactored enabled by id:
-userSchema.statics.isTwoFactorEnabled = async function (user: IUser) {
-  return user.isTwoFactorEnabled
-}
-
-// 9. hash password :
-userSchema.pre('save', async function (this: HydratedDocument<IUser>) {
-  if (!this.isModified('password')) return
-  this.password = await hashPassword(this.password, 12)
-})
-
-// 10. hash password :
+// 8. remove hash password :
 userSchema.post('save', async function (doc, next) {
   doc.password = ''
   next()
 })
-
-// 11. Compare Password:
-userSchema.methods.comparePassword = async (newPassword: string, encryptedPassword: string) => {
-  return await comparePassword(newPassword, encryptedPassword)
-}
-
-// 12. Access token generation:
-userSchema.methods.createAccessToken = async (
-  user: IUser,
-  privateKey: string,
-  expiresIn: number
-): Promise<string> => {
-  const payload: IJwtUserPayload = {
-    _id: user?._id?.toString(),
-    email: user?.email,
-    name: user?.name,
-    profileImage: user?.profileImage as string,
-    status: user?.status,
-  }
-  const accessToken = (await createToken(payload, privateKey, expiresIn)) as string
-  return accessToken
-}
-
-// 13. Refresh Token generation:
-userSchema.methods.createRefreshToken = async (
-  user: IUser,
-  privateKey: string,
-  expiresIn: number
-): Promise<string> => {
-  const payload: IJwtUserPayload = {
-    _id: user?._id?.toString(),
-    email: user?.email,
-    name: user?.name,
-    profileImage: user?.profileImage as string,
-    status: user?.status,
-  }
-  const refreshToken = await createToken(payload, privateKey, expiresIn)
-  return refreshToken as string
-}
 
 export const User = model<IUser, IUserModel>('User', userSchema)

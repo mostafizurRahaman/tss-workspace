@@ -38,8 +38,21 @@ const verifySignupOTP = catchAsync(async (req, res) => {
     data: null,
   })
 })
+
+// 3. Verify Login user:
+const login = catchAsync(async (req, res) => {
+  const result = await AuthServices.login(req.body)
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: `You have logged in successfully!`,
+    data: result,
+  })
+})
 export const AuthController = {
   signUp,
   resendSignupOTP,
   verifySignupOTP,
+  login,
 }
