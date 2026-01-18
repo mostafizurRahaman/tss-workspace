@@ -2,6 +2,7 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "./dist",
+    "jsx": "react-jsx",
     "paths": {
       "@app/*": ["apps/server/src/app/*"]
     }

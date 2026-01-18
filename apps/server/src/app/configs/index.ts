@@ -26,6 +26,8 @@ const envSchema = z.object({
   // Node Mailer
   NODE_APP_PASSWORD: z.string(),
   NODE_APP_EMAIL: z.string(),
+  NODE_EAMIL_HOST: z.string(),
+  NODE_EMAIL_PORT: z.string().transform((val) => Number(val)),
 
   // Stripe
   STRIPE_SECRET_KEY: z.string(),
@@ -89,6 +91,8 @@ const configs = {
   nodeMailer: {
     password: env.NODE_APP_PASSWORD,
     email: env.NODE_APP_EMAIL,
+    port: env.NODE_EMAIL_PORT,
+    host: env.NODE_EAMIL_HOST,
   },
 
   stripe: {

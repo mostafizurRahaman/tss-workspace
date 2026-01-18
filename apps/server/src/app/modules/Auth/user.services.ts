@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { AuthRoles, AuthStatus, Otp, otpTypes, User } from '@repo/db'
 import type { ISignUpSchemaType } from './user.validations'
 import { addTime, AppError, generateOtp, hashPassword } from '@repo/shared'
@@ -6,6 +7,7 @@ import httpStatus from 'http-status'
 import configs from '@app/configs'
 import mongoose from 'mongoose'
 import { renderEmail, SignupOTPEmail } from '@repo/email-templates'
+import { sendEmail } from 'packages/email-sender/src'
 
 // 1. Signup
 const signUp = async (payload: ISignUpSchemaType) => {
@@ -18,6 +20,7 @@ const signUp = async (payload: ISignUpSchemaType) => {
 
     // 1. Check existing user
     const existingUser = await User.isUserExistByEmail(email)
+
     if (existingUser) {
       throw new AppError(httpStatus.CONFLICT, 'You already have an account!')
     }
@@ -46,22 +49,45 @@ const signUp = async (payload: ISignUpSchemaType) => {
     // 4. Generate OTP
     const otp = generateOtp({ length: configs.otpSettings.digits })
 
-    // 5. Create / replace OTP (upsert)
-    await Otp.create({
-      user: newUser._id.toString(),
-      type: otpTypes.SIGNUP,
-      otp,
-      expiresAt: addTime(configs.otpSettings.expiresIn, 'minutes', true),
-    })
+    // 5. Create OTP:
+    const [savedOtp] = await Otp.create(
+      [
+        {
+          user: newUser._id.toString(),
+          type: otpTypes.SIGNUP,
+          otp,
+          expiresAt: addTime(configs.otpSettings.expiresIn, 'minutes', true),
+        },
+      ],
+      { session }
+    )
 
-    // const html = SignupOTPEmail({
+    // 6. Render Signup Template:
+    const htmlTemplate = await renderEmail(
+      SignupOTPEmail({
+        userFirstName: name,
+        companyName: configs.site.name,
+        companyLogo: configs.site.logo as string,
+        otpCode: savedOtp?.otp as string,
+      })
+    )
 
-    // })
-
-    // 6. Send OTP
-    // await sendEmail(renderEmail(SignupOTPEmail({
-
-    // })), otp)
+    // 6. Send OTP with rendered template
+    await sendEmail(
+      {
+        host: configs.nodeMailer.host,
+        port: configs.nodeMailer.port,
+        pass: configs.nodeMailer.password,
+        user: configs.nodeMailer.email,
+        secure: configs?.nodeEnv === 'production',
+      },
+      {
+        from: configs.nodeMailer.email,
+        to: newUser.email,
+        html: htmlTemplate.html,
+        subject: 'Your OTP for Account Verification',
+      }
+    )
 
     await session.commitTransaction()
     session.endSession()
@@ -70,10 +96,10 @@ const signUp = async (payload: ISignUpSchemaType) => {
       userId: newUser._id,
       message: 'Signup successful. Please verify OTP.',
     }
-  } catch (error) {
+  } catch (error: any) {
     await session.abortTransaction()
     session.endSession()
-    throw error
+    throw new Error(error)
   }
 }
 
