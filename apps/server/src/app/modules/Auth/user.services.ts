@@ -4,7 +4,10 @@ import type {
   IForgotPasswordType,
   ILoginType,
   IResendSignupType,
+  IResetPasswordOtpQueryType,
+  IResetPasswordOtpType,
   ISignUpSchemaType,
+  IVerifyResetPasswordOtpType,
   IVerifySignupOtpType,
 } from './user.validations'
 import {
@@ -14,6 +17,7 @@ import {
   createToken,
   generateOtp,
   hashPassword,
+  verifyToken,
   type IJwtUserPayload,
 } from '@repo/shared'
 // import { sendEmail } from '@repo/email-sender'
@@ -22,6 +26,7 @@ import configs from '@app/configs'
 import mongoose from 'mongoose'
 import { renderEmail, ResetPasswordOTPEmail, SignupOTPEmail } from '@repo/email-templates'
 import { sendEmail } from '@repo/email-sender'
+import { decode } from 'node:punycode'
 
 // 1. Signup
 const signUp = async (payload: ISignUpSchemaType) => {
@@ -377,6 +382,7 @@ const login = async (payload: ILoginType) => {
   }
 }
 
+// 5. Forgot password
 const forgotPassword = async (payload: IForgotPasswordType) => {
   const { email } = payload
   // 1. check user
@@ -483,10 +489,69 @@ const forgotPassword = async (payload: IForgotPasswordType) => {
   }
 }
 
+// 6. Verify Reset password otp:
+const verifyResetPasswordOtp = async (payload: IVerifyResetPasswordOtpType) => {
+  const { email, otp } = payload
+
+  // 1. check user
+  const user = await User.findOne({ email })
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, "User doesn't exists!")
+  }
+
+  // 2. check user status:
+  if (user.status === AuthStatus.BLOCKED) {
+    throw new AppError(httpStatus.FORBIDDEN, 'You account is blocked. Please contact support!')
+  }
+
+  if (user.status === AuthStatus.DELETED) {
+    throw new AppError(httpStatus.GONE, 'Your account is deleted!')
+  }
+
+  // 3. check is otp verified ?
+  if (!user.isOtpVerified) {
+    throw new AppError(httpStatus.BAD_REQUEST, 'Your account is not verified!')
+  }
+
+  // 4. Find valid otp:
+  const validOtp = await Otp.verifyAndConsumeOtp(user?._id?.toString(), otpTypes.RESET, otp)
+
+  if (!validOtp) {
+    throw new AppError(httpStatus.BAD_REQUEST, 'Invalid otp!')
+  }
+
+  // 5. Reset token payload:
+  const resetTokenPayload = {
+    _id: user?._id?.toString(),
+    email: user.email,
+    name: user.name,
+    profileImage: user.profileImage as string,
+    status: user.status,
+  }
+
+  // 5. Reset password token:
+  const resetToken = createToken(
+    resetTokenPayload,
+    configs.jwt.resetToken.secret,
+    configs.jwt.resetToken.expiresIn
+  )
+
+  return {
+    resetToken,
+  }
+}
+
+// 7. Reset password :
+const resetPassword = async (resetToken: string, payload: IResetPasswordOtpType) => {
+  const decoded = await verifyToken(resetToken, configs.jwt.resetToken.secret)
+  console.log(decoded)
+}
 export const AuthServices = {
   signUp,
   resendSignupOTP,
   verifySignupOTP,
   login,
   forgotPassword,
+  verifyResetPasswordOtp,
+  resetPassword,
 }

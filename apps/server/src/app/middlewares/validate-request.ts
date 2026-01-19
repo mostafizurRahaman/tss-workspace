@@ -18,6 +18,7 @@ export const validateRequest = (schema: ZodObject) => {
       if (data.cookies) {
         req.cookies = data.cookies
       }
+
       next()
     } else {
       console.log(error)

@@ -32,4 +32,18 @@ router.post(
   AuthController.forgotPassword
 )
 
+// 6. Verify reset password otp:
+router.post(
+  '/verify-otp',
+  validateRequest(AuthValidations.verifyResetPasswordOtpSchema),
+  AuthController.verifyResetPasswordOtp
+)
+
+// 7. Reset password:
+router.post(
+  '/reset-password',
+  validateRequest(AuthValidations.resetPasswordSchema),
+  AuthController.resetPassword
+)
+
 export const authRoutes = router
