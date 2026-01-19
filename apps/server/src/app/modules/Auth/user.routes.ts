@@ -25,4 +25,11 @@ router.post(
 // 4. Login :
 router.post('/login', validateRequest(AuthValidations.loginSchema), AuthController.login)
 
+// 5. Forgot passwod:
+router.post(
+  '/forgot-password',
+  validateRequest(AuthValidations.forgotPasswordSchema),
+  AuthController.forgotPassword
+)
+
 export const authRoutes = router

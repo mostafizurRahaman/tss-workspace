@@ -36,15 +36,22 @@ const verifySignupOtpSchema = z.object({
     }),
 })
 
+const forgotPasswordSchema = z.object({
+  body: signUserSchema.shape.body.pick({
+    email: true,
+  }),
+})
+
 export const AuthValidations = {
   signUserSchema,
   loginSchema,
   resendSignupOtpSchema,
   verifySignupOtpSchema,
+  forgotPasswordSchema,
 }
 
 export type ISignUpSchemaType = z.infer<typeof signUserSchema.shape.body>
-
 export type ILoginType = z.infer<typeof loginSchema.shape.body>
 export type IResendSignupType = z.infer<typeof resendSignupOtpSchema.shape.body>
 export type IVerifySignupOtpType = z.infer<typeof verifySignupOtpSchema.shape.body>
+export type IForgotPasswordType = z.infer<typeof forgotPasswordSchema.shape.body>

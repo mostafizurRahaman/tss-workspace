@@ -16,7 +16,6 @@ const signUp = catchAsync(async (req, res) => {
 })
 
 // 2. Resend Signup otp :
-
 const resendSignupOTP = catchAsync(async (req, res) => {
   const result = await AuthServices.resendSignupOTP(req.body)
 
@@ -40,7 +39,7 @@ const verifySignupOTP = catchAsync(async (req, res) => {
   })
 })
 
-// 3. Verify Login user:
+// 4. Login user:
 const login = catchAsync(async (req, res) => {
   const result = await AuthServices.login(req.body)
 
@@ -59,9 +58,23 @@ const login = catchAsync(async (req, res) => {
     data: result,
   })
 })
+
+// 5. Forgot password:
+const forgotPassword = catchAsync(async (req, res) => {
+  const result = await AuthServices.forgotPassword(req.body)
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: `Forgot password OTP sent to you email!`,
+    data: result,
+  })
+})
+
 export const AuthController = {
   signUp,
   resendSignupOTP,
   verifySignupOTP,
   login,
+  forgotPassword,
 }

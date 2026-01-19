@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { AuthRoles, AuthStatus, Otp, otpTypes, User, type IUser } from '@repo/db'
 import type {
+  IForgotPasswordType,
   ILoginType,
   IResendSignupType,
   ISignUpSchemaType,
@@ -19,7 +20,7 @@ import {
 import httpStatus from 'http-status'
 import configs from '@app/configs'
 import mongoose from 'mongoose'
-import { renderEmail, SignupOTPEmail } from '@repo/email-templates'
+import { renderEmail, ResetPasswordOTPEmail, SignupOTPEmail } from '@repo/email-templates'
 import { sendEmail } from '@repo/email-sender'
 
 // 1. Signup
@@ -318,7 +319,6 @@ const login = async (payload: ILoginType) => {
 
   // 1. check user
   const user = await User.findOne({ email }).select('+password')
-  console.log(user)
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, "User doesn't exists!")
   }
@@ -341,11 +341,6 @@ const login = async (payload: ILoginType) => {
 
   // 5. compare given password:
   const isPasswordMatched = await comparePassword(password, user.password)
-  console.log({
-    password,
-    hashed: user.password,
-    isPasswordMatched,
-  })
 
   if (!isPasswordMatched) {
     throw new AppError(httpStatus.BAD_REQUEST, 'Credential not matched!')
@@ -382,9 +377,116 @@ const login = async (payload: ILoginType) => {
   }
 }
 
+const forgotPassword = async (payload: IForgotPasswordType) => {
+  const { email } = payload
+  // 1. check user
+  const user = await User.findOne({ email })
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, "User doesn't exists!")
+  }
+
+  // 2. check user status:
+  if (user.status === AuthStatus.BLOCKED) {
+    throw new AppError(httpStatus.FORBIDDEN, 'You account is blocked. Please contact support!')
+  }
+
+  if (user.status === AuthStatus.DELETED) {
+    throw new AppError(httpStatus.GONE, 'Your account is deleted!')
+  }
+
+  // 3. check is otp verified ?
+  if (!user.isOtpVerified) {
+    throw new AppError(httpStatus.BAD_REQUEST, 'Your account is not verified!')
+  }
+
+  // 4. Has valid otp for reset password :
+  const exitingOtp = await Otp.findValidOtp(user._id.toString(), otpTypes.RESET)
+  if (exitingOtp) {
+    // 6. Render Reset password otp template:
+    const htmlTemplate = await renderEmail(
+      ResetPasswordOTPEmail({
+        userFirstName: user.name,
+        companyName: configs.site.name,
+        companyLogo: configs.site.logo as string,
+        otpCode: exitingOtp?.otp as string,
+      })
+    )
+
+    // 7. Send OTP with rendered template
+    await sendEmail(
+      {
+        host: configs.nodeMailer.host,
+        port: configs.nodeMailer.port,
+        pass: configs.nodeMailer.password,
+        user: configs.nodeMailer.email,
+        secure: configs?.nodeEnv === 'production',
+      },
+      {
+        from: configs.nodeMailer.email,
+        to: user.email,
+        html: htmlTemplate.html,
+        subject: 'OTP for reset password!',
+      }
+    )
+
+    throw new AppError(httpStatus.TOO_MANY_REQUESTS, 'Please wait before requesting another OTP')
+  } else {
+    // 8. Generate new otp
+    const newOtp = generateOtp({
+      length: configs.otpSettings.digits,
+    })
+
+    // 9. Store reset password otp:
+    const otp = await Otp.findOneAndUpdate(
+      {
+        user: user?._id?.toString(),
+        type: otpTypes.RESET,
+      },
+      {
+        user: user?._id?.toString(),
+        type: otpTypes.RESET,
+        expiresAt: addTime(configs.otpSettings.expiresIn, 'minutes'),
+        otp: newOtp,
+      },
+      {
+        new: true,
+        upsert: true,
+      }
+    )
+
+    // 6. Render Reset password otp template:
+    const htmlTemplate = await renderEmail(
+      ResetPasswordOTPEmail({
+        userFirstName: user.name,
+        companyName: configs.site.name,
+        companyLogo: configs.site.logo as string,
+        otpCode: otp?.otp as string,
+      })
+    )
+
+    // 7. Send OTP with rendered template
+    await sendEmail(
+      {
+        host: configs.nodeMailer.host,
+        port: configs.nodeMailer.port,
+        pass: configs.nodeMailer.password,
+        user: configs.nodeMailer.email,
+        secure: configs?.nodeEnv === 'production',
+      },
+      {
+        from: configs.nodeMailer.email,
+        to: user.email,
+        html: htmlTemplate.html,
+        subject: 'OTP for reset password!',
+      }
+    )
+  }
+}
+
 export const AuthServices = {
   signUp,
   resendSignupOTP,
   verifySignupOTP,
   login,
+  forgotPassword,
 }
