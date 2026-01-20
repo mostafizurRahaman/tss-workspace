@@ -1,5 +1,5 @@
 import { AppError, catchAsync, verifyToken } from '@repo/shared'
-import { AuthRoles, AuthStatus, User, type TAuthRole } from '@repo/db'
+import { AuthStatus, User, type TAuthRole } from '@repo/db'
 import httpStatus from 'http-status'
 import configs from '@app/configs'
 
@@ -78,7 +78,8 @@ export const auth = (...requiredRoles: TAuthRole[]) => {
     /**
      * 7. Attach user to request
      */
-    ;(req as any).user = user
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ;(req as any).user = decoded
 
     next()
   })

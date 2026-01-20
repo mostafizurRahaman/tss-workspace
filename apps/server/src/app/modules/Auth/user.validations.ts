@@ -66,6 +66,13 @@ const resetPasswordSchema = z.object({
   }),
 })
 
+const changedPasswordSchema = z.object({
+  body: z.object({
+    oldPassword: requiredString('oldPassword'),
+    newPassword: requiredString('newPassword'),
+  }),
+})
+
 export const AuthValidations = {
   signUserSchema,
   loginSchema,
@@ -74,6 +81,7 @@ export const AuthValidations = {
   forgotPasswordSchema,
   verifyResetPasswordOtpSchema,
   resendOTPSchema,
+  changedPasswordSchema,
   resetPasswordSchema,
 }
 
@@ -85,3 +93,4 @@ export type IForgotPasswordType = z.infer<typeof forgotPasswordSchema.shape.body
 export type IVerifyResetPasswordOtpType = z.infer<typeof verifyResetPasswordOtpSchema.shape.body>
 export type IResetPasswordOtpType = z.infer<typeof resetPasswordSchema.shape.body>
 export type IResetPasswordOtpQueryType = z.infer<typeof resetPasswordSchema.shape.query>
+export type IChangedPasswordType = z.infer<typeof changedPasswordSchema.shape.body>

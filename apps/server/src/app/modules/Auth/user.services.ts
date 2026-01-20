@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { AuthRoles, AuthStatus, Otp, otpTypes, User, type IUser } from '@repo/db'
 import type {
+  IChangedPasswordType,
   IForgotPasswordType,
   ILoginType,
   IResendSignupType,
@@ -685,9 +686,38 @@ const resetPassword = async (resetToken: string, payload: IResetPasswordOtpType)
 }
 
 // 9. Changed password:
-// const changedPassword = async() => { 
+const changedPassword = async (userInfo: IJwtUserPayload, payload: IChangedPasswordType) => {
+  const { newPassword, oldPassword } = payload
 
-// }
+  // 1. Check is user exists with this id?:
+  const user = await User.findById(userInfo._id).select('+password')
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, "User doesn't exists!")
+  }
+
+  // 2. Compare old password to password hash:
+  const isPasswordMatched = await comparePassword(oldPassword, user.password)
+  if (!isPasswordMatched) {
+    throw new AppError(httpStatus.CONFLICT, 'Password not matched!')
+  }
+
+  // 3. Hash new password:
+  const hashedPassword = await hashPassword(newPassword, configs.passwordSoltRound)
+
+  // 4. Update password now:
+  await User.findOneAndUpdate(
+    {
+      _id: user._id,
+    },
+    {
+      password: hashedPassword,
+      passwordChangedAt: new Date(),
+    },
+    {
+      new: true,
+    }
+  )
+}
 
 export const AuthServices = {
   signUp,
@@ -698,4 +728,5 @@ export const AuthServices = {
   verifyResetPasswordOtp,
   resendOTP,
   resetPassword,
+  changedPassword,
 }

@@ -8,6 +8,6 @@
       "@app/*": ["apps/server/src/app/*"]
     }
   },
-  "include": ["src/**/*.ts", "src/app/interfaces/index.d.ts"],
+  "include": ["src/**/*.ts", "src/app/interfaces/express/index.d.ts"],
   "exclude": ["node_modules", "dist", "**/*.js", "**/*.js.map", "**/*.d.ts", "**/*.d.ts.map"]
 }

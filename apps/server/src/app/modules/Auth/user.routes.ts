@@ -2,6 +2,8 @@ import { validateRequest } from '@app/middlewares'
 import express, { Router } from 'express'
 import { AuthValidations } from './user.validations'
 import { AuthController } from './user.controllers'
+import { auth } from '@app/middlewares/auth'
+import { AuthRoles } from 'packages/db/src'
 
 const router: Router = express()
 
@@ -51,6 +53,14 @@ router.post(
   '/reset-password',
   validateRequest(AuthValidations.resetPasswordSchema),
   AuthController.resetPassword
+)
+
+// 9. Changed password:
+router.post(
+  '/changed-password',
+  auth(AuthRoles.ADMIN, AuthRoles.SUPER_ADMIN, AuthRoles.USER),
+  validateRequest(AuthValidations.changedPasswordSchema),
+  AuthController.changedPassword
 )
 
 export const authRoutes = router

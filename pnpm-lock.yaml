@@ -259,6 +259,9 @@ importers:
 
   packages/shared:
     dependencies:
+      '@repo/db':
+        specifier: workspace:*
+        version: link:../db
       '@types/jsonwebtoken':
         specifier: ^9.0.10
         version: 9.0.10
