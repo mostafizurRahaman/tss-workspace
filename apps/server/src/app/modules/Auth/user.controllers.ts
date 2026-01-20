@@ -109,6 +109,20 @@ const resetPassword = catchAsync(async (req, res) => {
   })
 })
 
+// 9. Changed password:
+// const changedPassword = catchAsync(async (req, res) => {
+//   const payload = req.body
+
+//   await AuthServices.resetPassword(resetToken, payload)
+
+//   sendResponse(res, {
+//     success: true,
+//     statusCode: httpStatus.OK,
+//     message: `Password changed successfully!`,
+//     data: null,
+//   })
+// })
+
 export const AuthController = {
   signUp,
   resendSignupOTP,
@@ -118,4 +132,5 @@ export const AuthController = {
   verifyResetPasswordOtp,
   resendOTP,
   resetPassword,
+  changedPassword,
 }

@@ -684,6 +684,11 @@ const resetPassword = async (resetToken: string, payload: IResetPasswordOtpType)
   return
 }
 
+// 9. Changed password:
+// const changedPassword = async() => { 
+
+// }
+
 export const AuthServices = {
   signUp,
   resendSignupOTP,
