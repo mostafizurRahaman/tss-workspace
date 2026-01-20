@@ -85,6 +85,8 @@ export const AuthValidations = {
   resetPasswordSchema,
 }
 
+
+
 export type ISignUpSchemaType = z.infer<typeof signUserSchema.shape.body>
 export type ILoginType = z.infer<typeof loginSchema.shape.body>
 export type IResendSignupType = z.infer<typeof resendSignupOtpSchema.shape.body>
