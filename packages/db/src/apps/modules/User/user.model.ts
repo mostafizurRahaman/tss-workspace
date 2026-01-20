@@ -124,4 +124,20 @@ userSchema.post('save', async function (doc, next) {
   next()
 })
 
+// 9. Compare is jwt issued before password changed ?
+userSchema.statics.isJwtIssuedBeforePasswordChanged = function (
+  passwordChangedAt: Date,
+  jwtIssuedTimestamp: number
+): boolean {
+  if (!passwordChangedAt) {
+    return false
+  }
+
+  // Convert to milliseconds
+  const jwtIssuedTime = jwtIssuedTimestamp * 1000
+
+  // Compare
+  return jwtIssuedTime < passwordChangedAt.getTime()
+}
+
 export const User = model<IUser, IUserModel>('User', userSchema)

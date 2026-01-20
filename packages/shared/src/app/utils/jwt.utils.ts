@@ -20,10 +20,10 @@ export const createToken = (
 }
 
 // 2. Verify jwt token:
-export const verifyToken = async (token: string, privateKey: string): Promise<IJwtUserPayload> => {
+export const verifyToken = (token: string, privateKey: string): IJwtUserPayload => {
   try {
     const decoded = jwt.verify(token, privateKey) as IJwtUserPayload
-    return decoded
+    return decoded as IJwtUserPayload
   } catch (error: any) {
     switch (error.name) {
       case 'TokenExpiredError':

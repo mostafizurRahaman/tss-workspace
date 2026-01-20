@@ -4,7 +4,6 @@ import type {
   IForgotPasswordType,
   ILoginType,
   IResendSignupType,
-  IResetPasswordOtpQueryType,
   IResetPasswordOtpType,
   ISignUpSchemaType,
   IVerifyResetPasswordOtpType,
@@ -543,8 +542,56 @@ const verifyResetPasswordOtp = async (payload: IVerifyResetPasswordOtpType) => {
 
 // 7. Reset password :
 const resetPassword = async (resetToken: string, payload: IResetPasswordOtpType) => {
-  const decoded = await verifyToken(resetToken, configs.jwt.resetToken.secret)
-  console.log(decoded)
+  const { newPassword } = payload
+
+  // 1. Decode the reset token:
+  const decoded = verifyToken(resetToken, configs.jwt.resetToken.secret)
+  if (!decoded.email) {
+    throw new AppError(httpStatus.FORBIDDEN, 'Invalid Token!')
+  }
+
+  // 2. Find user with this email:
+  const user = await User.findOne({ email: decoded.email }).select('+password')
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, "User doesn't exits!")
+  }
+
+  // 3. Check user status :
+  if (await User.isUserBlocked(user)) {
+    throw new AppError(httpStatus.FORBIDDEN, 'You account is blocked. Please contact support!')
+  }
+
+  if (await User.isUserDeleted(user)) {
+    throw new AppError(httpStatus.GONE, 'Your account is deleted!')
+  }
+
+  // 4. Compare if JWT was issued before password change:
+  if (
+    await User.isJwtIssuedBeforePasswordChanged(
+      user.passwordChangedAt as Date,
+      decoded.iat as number
+    )
+  ) {
+    throw new AppError(httpStatus.BAD_REQUEST, 'Your session has expired.')
+  }
+
+  // 4. Hash password:
+  const hashedPassword = await hashPassword(newPassword, configs.passwordSoltRound)
+
+  // 5. Update user password:
+  await User.findOneAndUpdate(
+    {
+      _id: user?._id,
+    },
+    {
+      $set: {
+        password: hashedPassword,
+        passwordChangedAt: new Date(),
+      },
+    }
+  )
+
+  return
 }
 export const AuthServices = {
   signUp,

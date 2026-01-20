@@ -41,6 +41,6 @@ export interface IUserModel extends Model<IUser> {
   isUserStatusPending(user: IUser): Promise<boolean>
   isJwtIssuedBeforePasswordChanged: (
     passwordChangedAt: Date,
-    jwtIssuedTimestamps: string
+    jwtIssuedTimestamps: number
   ) => Promise<boolean>
 }

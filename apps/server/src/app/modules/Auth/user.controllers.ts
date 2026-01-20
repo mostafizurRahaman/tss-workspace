@@ -87,13 +87,14 @@ const verifyResetPasswordOtp = catchAsync(async (req, res) => {
 const resetPassword = catchAsync(async (req, res) => {
   const resetToken = req.query.resetToken as string
   const payload = req.body
-  const result = await AuthServices.resetPassword(resetToken, payload)
+
+  await AuthServices.resetPassword(resetToken, payload)
 
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
-    message: `Otp successfully verified!`,
-    data: result,
+    message: `Password changed successfully!`,
+    data: null,
   })
 })
 
