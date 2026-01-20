@@ -51,6 +51,12 @@ const verifyResetPasswordOtpSchema = z.object({
   }),
 })
 
+const resendOTPSchema = z.object({
+  body: verifySignupOtpSchema.shape.body.pick({
+    email: true,
+  }),
+})
+
 const resetPasswordSchema = z.object({
   body: z.object({
     newPassword: requiredString('newPassword'),
@@ -67,6 +73,7 @@ export const AuthValidations = {
   verifySignupOtpSchema,
   forgotPasswordSchema,
   verifyResetPasswordOtpSchema,
+  resendOTPSchema,
   resetPasswordSchema,
 }
 

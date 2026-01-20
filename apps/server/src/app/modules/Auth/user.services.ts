@@ -25,7 +25,6 @@ import configs from '@app/configs'
 import mongoose from 'mongoose'
 import { renderEmail, ResetPasswordOTPEmail, SignupOTPEmail } from '@repo/email-templates'
 import { sendEmail } from '@repo/email-sender'
-import { decode } from 'node:punycode'
 
 // 1. Signup
 const signUp = async (payload: ISignUpSchemaType) => {
@@ -407,33 +406,6 @@ const forgotPassword = async (payload: IForgotPasswordType) => {
   // 4. Has valid otp for reset password :
   const exitingOtp = await Otp.findValidOtp(user._id.toString(), otpTypes.RESET)
   if (exitingOtp) {
-    // 6. Render Reset password otp template:
-    const htmlTemplate = await renderEmail(
-      ResetPasswordOTPEmail({
-        userFirstName: user.name,
-        companyName: configs.site.name,
-        companyLogo: configs.site.logo as string,
-        otpCode: exitingOtp?.otp as string,
-      })
-    )
-
-    // 7. Send OTP with rendered template
-    await sendEmail(
-      {
-        host: configs.nodeMailer.host,
-        port: configs.nodeMailer.port,
-        pass: configs.nodeMailer.password,
-        user: configs.nodeMailer.email,
-        secure: configs?.nodeEnv === 'production',
-      },
-      {
-        from: configs.nodeMailer.email,
-        to: user.email,
-        html: htmlTemplate.html,
-        subject: 'OTP for reset password!',
-      }
-    )
-
     throw new AppError(httpStatus.TOO_MANY_REQUESTS, 'Please wait before requesting another OTP')
   } else {
     // 8. Generate new otp
@@ -540,7 +512,125 @@ const verifyResetPasswordOtp = async (payload: IVerifyResetPasswordOtpType) => {
   }
 }
 
-// 7. Reset password :
+// 7. Resend Signup otp:
+const resendOTP = async (payload: IResendSignupType) => {
+  const { email } = payload
+
+  // 1. Check existing user
+  const user = (await User.isUserExistByEmail(email)) as IUser
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, `User Doesn't exits!`)
+  }
+
+  if (user.status === AuthStatus.BLOCKED) {
+    throw new AppError(
+      httpStatus.FORBIDDEN,
+      'Your account has been blocked. Please contact support.'
+    )
+  }
+
+  if (user.status === AuthStatus.DELETED) {
+    throw new AppError(
+      httpStatus.GONE,
+      'This account was deleted. Please contact support to restore it.'
+    )
+  }
+
+  if (!user.isOtpVerified) {
+    throw new AppError(httpStatus.CONFLICT, 'Your account is not verified yet!')
+  }
+
+  // 2. Check Otp exists ? :
+  const existingOtp = await Otp.findValidOtp(user._id?.toString(), otpTypes.RESET)
+
+  // 3. If existing otp still valid resend otp:
+  if (existingOtp) {
+    // Render Signup Template:
+    const htmlTemplate = await renderEmail(
+      ResetPasswordOTPEmail({
+        userFirstName: user.name,
+        companyName: configs.site.name,
+        companyLogo: configs.site.logo as string,
+        otpCode: existingOtp?.otp as string,
+      })
+    )
+
+    //  Send OTP with rendered template
+    await sendEmail(
+      {
+        host: configs.nodeMailer.host,
+        port: configs.nodeMailer.port,
+        pass: configs.nodeMailer.password,
+        user: configs.nodeMailer.email,
+        secure: configs?.nodeEnv === 'production',
+      },
+      {
+        from: configs.nodeMailer.email,
+        to: user.email,
+        html: htmlTemplate.html,
+        subject: 'OTP for reset password!',
+      }
+    )
+
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      'An OTP has already been sent and is still valid. Please check your email or wait for it to expire.'
+    )
+  }
+
+  // 4. Generate new otp:
+  const newOtp = generateOtp({ length: 6 })
+
+  // 5. Create OTP:
+  const savedOtp = await Otp.findOneAndUpdate(
+    {
+      user: user._id.toString(),
+      type: otpTypes.RESET,
+    },
+    {
+      user: user._id.toString(),
+      type: otpTypes.RESET,
+      otp: newOtp,
+      expiresAt: addTime(configs.otpSettings.expiresIn, 'minutes', true),
+    },
+    {
+      new: true,
+    }
+  )
+
+  // 6. Render Signup Template:
+  const htmlTemplate = await renderEmail(
+    ResetPasswordOTPEmail({
+      userFirstName: user.name,
+      companyName: configs.site.name,
+      companyLogo: configs.site.logo as string,
+      otpCode: savedOtp?.otp as string,
+    })
+  )
+
+  // 7. Send OTP with rendered template
+  await sendEmail(
+    {
+      host: configs.nodeMailer.host,
+      port: configs.nodeMailer.port,
+      pass: configs.nodeMailer.password,
+      user: configs.nodeMailer.email,
+      secure: configs?.nodeEnv === 'production',
+    },
+    {
+      from: configs.nodeMailer.email,
+      to: user.email,
+      html: htmlTemplate.html,
+      subject: 'OTP for reset password!',
+    }
+  )
+
+  return {
+    geneated: true,
+  }
+}
+
+// 8. Reset password :
 const resetPassword = async (resetToken: string, payload: IResetPasswordOtpType) => {
   const { newPassword } = payload
 
@@ -593,6 +683,7 @@ const resetPassword = async (resetToken: string, payload: IResetPasswordOtpType)
 
   return
 }
+
 export const AuthServices = {
   signUp,
   resendSignupOTP,
@@ -600,5 +691,6 @@ export const AuthServices = {
   login,
   forgotPassword,
   verifyResetPasswordOtp,
+  resendOTP,
   resetPassword,
 }
