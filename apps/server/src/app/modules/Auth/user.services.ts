@@ -33,7 +33,6 @@ const signUp = async (payload: ISignUpSchemaType) => {
 
   // 1. Check existing user
   const existingUser = (await User.isUserExistByEmail(email)) as IUser
-  console.log(existingUser)
 
   if (existingUser) {
     switch (existingUser.status) {

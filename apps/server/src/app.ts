@@ -8,6 +8,7 @@ import cookieParser from 'cookie-parser'
 import { notFound } from './app/middlewares/not-found'
 import globalErrorHandler from './app/middlewares/global-error-handler'
 import { allRoutes } from '@app/routes'
+import { logger } from '@app/libs/logger'
 const app: express.Application = express()
 
 const limiter = rateLimit({
@@ -16,8 +17,16 @@ const limiter = rateLimit({
   message: 'Too many accounts created from this IP, please try again after a minute',
 })
 
+const stream = {
+  write: (message: string) => logger.http(message),
+}
+
 // application level middlewars:
-app.use(morgan('common'))
+app.use(
+  morgan(':method :url :status :res[content-length] - :response-time ms', {
+    stream,
+  })
+)
 app.use(helmet())
 app.use(express.json())
 app.use(cookieParser())

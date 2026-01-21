@@ -3,6 +3,7 @@
   "compilerOptions": {
     "outDir": "./dist",
     "typeRoots": ["./src/app/interfaces"],
+
     "jsx": "react-jsx",
     "paths": {
       "@app/*": ["apps/server/src/app/*"]

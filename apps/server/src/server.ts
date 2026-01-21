@@ -2,21 +2,22 @@ import { connectDB } from '@repo/db'
 import { Server } from 'http'
 import configs from './app/configs'
 import app from './app'
+import { logger } from '@app/libs/logger'
+import { AppError } from 'packages/shared/src'
 
 let server: Server
 //  boostrap function :
 const boostrap = async () => {
   try {
     await connectDB(configs.databaseUrl)
-    console.log(`✅ Database connected  successfully!`)
 
+    logger.info('✅ Database connected  successfully!')
     // server listen :
     server = app.listen(configs.port, () => {
-      console.log(`🧑‍🚀🚀 Server is running on ${configs.port}`)
+      logger.info(`🧑‍🚀🚀 Server is running on ${configs.port}`)
     })
   } catch (err) {
-    console.log(err)
-    console.log(`❌ Database connection failed ❌ `)
+    logger.error(`❌ Database connection failed ❌`, err)
   }
 }
 
@@ -25,7 +26,9 @@ boostrap()
 
 // handle unhandled rejection
 process.on('unhandledRejection', (reason) => {
-  console.log(`UNHANDELED REJECTION : REASON ->`, reason)
+  logger.error('unhandledRejection', {
+    reason,
+  })
   if (server) {
     server.close(() => {
       process.exit(1)
@@ -37,6 +40,6 @@ process.on('unhandledRejection', (reason) => {
 
 // handled uncaughtException:
 process.on('uncaughtException', (error) => {
-  console.log('uncaughtException: ERROR', error.message)
+  logger.error('uncaughtException: ERROR', error.message)
   process.exit(1)
 })
