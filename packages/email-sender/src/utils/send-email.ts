@@ -1,11 +1,9 @@
-import type { EmailConfig, SendEmailParams } from '../types/email-sender'
-import { createTransporter } from './create-transporter'
+import type { SendEmailParams } from '../types/email-sender'
+import { transporter } from './create-transporter'
 
-export const sendEmail = async (config: EmailConfig, params: SendEmailParams) => {
-  const transporter = createTransporter(config)
-
+export const sendEmail = async (params: SendEmailParams) => {
   return transporter.sendMail({
-    from: params.from || `"Support" <${config.user}>`,
+    from: process.env.NODE_APP_EMAIL,
     to: params.to,
     subject: params.subject,
     html: params.html,

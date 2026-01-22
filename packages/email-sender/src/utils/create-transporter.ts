@@ -12,3 +12,13 @@ export const createTransporter = (config: EmailConfig) => {
     },
   })
 }
+
+const config: EmailConfig = {
+  host: process.env.NODE_EAMIL_HOST as string,
+  pass: process.env.NODE_APP_PASSWORD as string,
+  port: Number(process.env.NODE_EMAIL_PORT),
+  user: process.env.NODE_APP_EMAIL as string,
+  secure: process.env.NODE_ENV === 'production',
+}
+
+export const transporter = createTransporter(config)

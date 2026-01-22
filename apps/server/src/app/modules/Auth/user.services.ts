@@ -118,21 +118,11 @@ const signUp = async (payload: ISignUpSchemaType) => {
     )
 
     // 7. Send OTP with rendered template
-    await sendEmail(
-      {
-        host: configs.nodeMailer.host,
-        port: configs.nodeMailer.port,
-        pass: configs.nodeMailer.password,
-        user: configs.nodeMailer.email,
-        secure: configs?.nodeEnv === 'production',
-      },
-      {
-        from: configs.nodeMailer.email,
-        to: newUser.email,
-        html: htmlTemplate.html,
-        subject: 'Your OTP for Account Verification',
-      }
-    )
+    await sendEmail({
+      to: newUser.email,
+      html: htmlTemplate.html,
+      subject: 'Your OTP for Account Verification',
+    })
 
     await session.commitTransaction()
     session.endSession()
@@ -200,21 +190,11 @@ const resendSignupOTP = async (payload: IResendSignupType) => {
     )
 
     //  Send OTP with rendered template
-    await sendEmail(
-      {
-        host: configs.nodeMailer.host,
-        port: configs.nodeMailer.port,
-        pass: configs.nodeMailer.password,
-        user: configs.nodeMailer.email,
-        secure: configs?.nodeEnv === 'production',
-      },
-      {
-        from: configs.nodeMailer.email,
-        to: user.email,
-        html: htmlTemplate.html,
-        subject: 'Your OTP for Account Verification',
-      }
-    )
+    await sendEmail({
+      to: user.email,
+      html: htmlTemplate.html,
+      subject: 'Your OTP for Account Verification',
+    })
 
     throw new AppError(
       httpStatus.BAD_REQUEST,
@@ -253,21 +233,11 @@ const resendSignupOTP = async (payload: IResendSignupType) => {
   )
 
   // 7. Send OTP with rendered template
-  await sendEmail(
-    {
-      host: configs.nodeMailer.host,
-      port: configs.nodeMailer.port,
-      pass: configs.nodeMailer.password,
-      user: configs.nodeMailer.email,
-      secure: configs?.nodeEnv === 'production',
-    },
-    {
-      from: configs.nodeMailer.email,
-      to: user.email,
-      html: htmlTemplate.html,
-      subject: 'Your OTP for Account Verification',
-    }
-  )
+  await sendEmail({
+    to: user.email,
+    html: htmlTemplate.html,
+    subject: 'Your OTP for Account Verification',
+  })
 
   return {
     geneated: true,
@@ -442,21 +412,11 @@ const forgotPassword = async (payload: IForgotPasswordType) => {
     )
 
     // 7. Send OTP with rendered template
-    await sendEmail(
-      {
-        host: configs.nodeMailer.host,
-        port: configs.nodeMailer.port,
-        pass: configs.nodeMailer.password,
-        user: configs.nodeMailer.email,
-        secure: configs?.nodeEnv === 'production',
-      },
-      {
-        from: configs.nodeMailer.email,
-        to: user.email,
-        html: htmlTemplate.html,
-        subject: 'OTP for reset password!',
-      }
-    )
+    await sendEmail({
+      to: user.email,
+      html: htmlTemplate.html,
+      subject: 'OTP for reset password!',
+    })
   }
 }
 
@@ -556,21 +516,11 @@ const resendOTP = async (payload: IResendSignupType) => {
     )
 
     //  Send OTP with rendered template
-    await sendEmail(
-      {
-        host: configs.nodeMailer.host,
-        port: configs.nodeMailer.port,
-        pass: configs.nodeMailer.password,
-        user: configs.nodeMailer.email,
-        secure: configs?.nodeEnv === 'production',
-      },
-      {
-        from: configs.nodeMailer.email,
-        to: user.email,
-        html: htmlTemplate.html,
-        subject: 'OTP for reset password!',
-      }
-    )
+    await sendEmail({
+      to: user.email,
+      html: htmlTemplate.html,
+      subject: 'OTP for reset password!',
+    })
 
     throw new AppError(
       httpStatus.BAD_REQUEST,
@@ -609,21 +559,11 @@ const resendOTP = async (payload: IResendSignupType) => {
   )
 
   // 7. Send OTP with rendered template
-  await sendEmail(
-    {
-      host: configs.nodeMailer.host,
-      port: configs.nodeMailer.port,
-      pass: configs.nodeMailer.password,
-      user: configs.nodeMailer.email,
-      secure: configs?.nodeEnv === 'production',
-    },
-    {
-      from: configs.nodeMailer.email,
-      to: user.email,
-      html: htmlTemplate.html,
-      subject: 'OTP for reset password!',
-    }
-  )
+  await sendEmail({
+    to: user.email,
+    html: htmlTemplate.html,
+    subject: 'OTP for reset password!',
+  })
 
   return {
     geneated: true,
