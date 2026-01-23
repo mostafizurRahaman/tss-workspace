@@ -1,7 +1,10 @@
 import { DeleteObjectsCommand, waitUntilObjectNotExists } from '@aws-sdk/client-s3'
 import { s3Client } from '../../configs/aws.config'
+import { extractS3KeyFromUrl } from './extract-s3-key'
 
-export const deleteMultipleFilesFromS3 = async (keys: string[]) => {
+export const deleteMultipleFilesFromS3 = async (urls: string[]) => {
+  const keys = urls.map(extractS3KeyFromUrl)
+
   const { Deleted } = await s3Client.send(
     new DeleteObjectsCommand({
       Bucket: process.env.AWS_S3_BUCKET_NAME as string,
