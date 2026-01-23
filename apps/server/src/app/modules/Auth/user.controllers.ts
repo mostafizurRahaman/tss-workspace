@@ -124,6 +124,10 @@ const changedPassword = catchAsync(async (req, res) => {
   })
 })
 
+
+
+
+
 export const AuthController = {
   signUp,
   resendSignupOTP,

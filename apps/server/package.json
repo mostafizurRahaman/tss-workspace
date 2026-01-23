@@ -26,6 +26,7 @@
     "@repo/email-templates": "workspace:*",
     "@repo/logger": "workspace:*",
     "@repo/shared": "workspace:*",
+    "@repo/media-hub": "workspace:*",
     "@typescript-eslint/eslint-plugin": "^8.53.0",
     "@typescript-eslint/parser": "^8.53.0",
     "cookie-parser": "^1.4.7",

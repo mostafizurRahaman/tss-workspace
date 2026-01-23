@@ -3,7 +3,7 @@ import express, { Router } from 'express'
 import { AuthValidations } from './user.validations'
 import { AuthController } from './user.controllers'
 import { auth } from '@app/middlewares/auth'
-import { AuthRoles } from 'packages/db/src'
+import { AuthRoles } from '@repo/db'
 
 const router: Router = express()
 
@@ -62,5 +62,25 @@ router.post(
   validateRequest(AuthValidations.changedPasswordSchema),
   AuthController.changedPassword
 )
+
+// // 10. Test file uploads :
+// router.post(
+//   '/uploads',
+
+//   (req, res, next) => {
+//     const file = req.file
+//     const files = req.files
+
+//     logger.info({
+//       file,
+//       files,
+//     })
+
+//     res.send({
+//       file,
+//       files,
+//     })
+//   }
+// )
 
 export const authRoutes = router
