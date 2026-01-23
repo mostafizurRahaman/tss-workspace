@@ -36,3 +36,10 @@ export interface FileValidationConfig {
   allowedExtensions?: FileExtension[] // override and mix you can priority
   maxSizeInMB?: number
 }
+
+
+export interface UploadedFile {
+  key: string;
+  url: string;
+  provider: 'aws';
+}
