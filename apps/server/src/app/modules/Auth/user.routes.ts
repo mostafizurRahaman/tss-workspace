@@ -63,24 +63,4 @@ router.post(
   AuthController.changedPassword
 )
 
-// // 10. Test file uploads :
-// router.post(
-//   '/uploads',
-
-//   (req, res, next) => {
-//     const file = req.file
-//     const files = req.files
-
-//     logger.info({
-//       file,
-//       files,
-//     })
-
-//     res.send({
-//       file,
-//       files,
-//     })
-//   }
-// )
-
 export const authRoutes = router

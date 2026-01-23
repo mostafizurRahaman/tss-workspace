@@ -3,7 +3,6 @@ import { Server } from 'http'
 import configs from './app/configs'
 import app from './app'
 import { logger } from '@app/libs/logger'
-import { AppError } from 'packages/shared/src'
 
 let server: Server
 //  boostrap function :
