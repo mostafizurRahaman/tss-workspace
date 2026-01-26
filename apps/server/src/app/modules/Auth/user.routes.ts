@@ -41,7 +41,7 @@ router.post(
   AuthController.verifyResetPasswordOtp
 )
 
-// 6. Verify reset password otp:
+// 7. Resend reset password otp:
 router.post(
   '/resend-otp',
   validateRequest(AuthValidations.resendOTPSchema),
